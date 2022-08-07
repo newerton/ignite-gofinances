@@ -40,40 +40,14 @@ export const THEME = extendTheme({
     },
   },
   fonts: {
-    heading: "Roboto",
-    body: "Roboto",
-    mono: "Roboto",
+    heading: "Roboto_400Regular",
+    body: "Roboto_400Regular",
+    mono: "Roboto_500Medium",
   },
 });
 
 type CustomThemeType = typeof THEME;
 
 declare module "native-base" {
-  interface ICustomTheme extends Exclude<CustomThemeType, "colors"> {
-    colors: {
-      primary: {
-        default: string;
-      };
-      secondary: {
-        default: string;
-        light: string;
-      };
-      success: {
-        default: string;
-        light: string;
-      };
-      error: {
-        default: string;
-        light: string;
-      };
-      gray: {
-        default: string;
-        text: string;
-      };
-      white: {
-        default: string;
-        background: string;
-      };
-    };
-  }
+  interface ICustomTheme extends CustomThemeType {}
 }

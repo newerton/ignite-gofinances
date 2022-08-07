@@ -9,68 +9,103 @@ import {
   FlatList,
   Center,
 } from "native-base";
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import {
   getBottomSpace,
   getStatusBarHeight,
 } from "react-native-iphone-x-helper";
-import { HighlightCard } from "../components/HighlightCard";
+import HighlightCard from "../components/HighlightCard";
 import { Feather } from "@expo/vector-icons";
 import {
   TransactionCard,
   TransactionCardProps,
 } from "../components/TransactionCard";
+import { BorderlessButton } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import dayjs from "dayjs";
+import "dayjs/locale/pt-br";
+
+dayjs.locale("pt-br");
+
+const sum = (data, type) => {
+  return data.reduce((total, transaction) => {
+    if (transaction.transaction_type === type) {
+      return total + transaction.price;
+    }
+    return total;
+  }, 0);
+};
+
+const lastDate = (data, type) => {
+  const date = data.reduce((last, transaction) => {
+    if (transaction.transaction_type === type) {
+      return last > transaction.date ? last : transaction.date;
+    }
+    return last;
+  }, 0);
+
+  if (date) {
+    return dayjs(date).format("DD [de] MMMM");
+  }
+  return null;
+};
+
+const firstDate = (data) => {
+  const date = data.reduce((last, transaction) => {
+    return last < transaction.date ? last : transaction.date;
+  }, 0);
+
+  if (date) {
+    return dayjs(date).format("DD [de] MMMM");
+  }
+  return null;
+};
 
 export function Dashboard() {
+  const [data, setData] = useState<TransactionCardProps[]>([]);
+
+  const [income, setIncome] = useState<number | null>(null);
+  const [incomeLastDate, setIncomeLastDate] = useState<string>(null);
+
+  const [outcome, setOutcome] = useState<number| null>(null);
+  const [outcomeLastDate, setOutcomeLastDate] = useState<string>(null);
+
+  const [total, setTotal] = useState<number| null>(null);
+  const [totalFirstDate, setTotalFirstDate] = useState<string>(null);
+
   const { colors } = useTheme();
   const statusBarHeight = getStatusBarHeight();
+  const flatListRef = useRef(null);
 
-  const [transactions, setTransactions] = useState<TransactionCardProps[]>([
-    {
-      id: "e25a8fb3-e6af-4b99-b0da-8c97b3c7a03f",
-      type: "income",
-      title: "Desenvolvimento de site",
-      amount: 1200,
-      category: {
-        title: "Vendas",
-        icon: "dollar-sign",
-      },
-      date: "2022-08-01",
-    },
-    {
-      id: "b09cc969-8c34-4365-8e13-5f80defe657d",
-      type: "outcome",
-      title: "Hamburgueria Pizzy",
-      amount: 59,
-      category: {
-        title: "Alimentação",
-        icon: "coffee",
-      },
-      date: "2022-08-01",
-    },
-    {
-      id: "e25a8fb3-e6af-4b99-b0da-8c97b3c7a03g",
-      type: "income",
-      title: "Desenvolvimento de site",
-      amount: 1200,
-      category: {
-        title: "Vendas",
-        icon: "dollar-sign",
-      },
-      date: "2022-08-01",
-    },
-    {
-      id: "b09cc969-8c34-4365-8e13-5f80defe657e",
-      type: "outcome",
-      title: "Hamburgueria Pizzy",
-      amount: 59,
-      category: {
-        title: "Alimentação",
-        icon: "coffee",
-      },
-      date: "2022-08-01",
-    },
-  ]);
+  const loadData = async () => {
+    const dataKey = "@gofinance:transactions";
+    const dataStorage = await AsyncStorage.getItem(dataKey);
+    const transactions = dataStorage ? JSON.parse(dataStorage) : [];
+
+    const sumIncome = sum(transactions, "up");
+    setIncome(sumIncome);
+    const lastIncome = lastDate(transactions, "up");
+    setIncomeLastDate(lastIncome);
+
+    const sumOutcome = sum(transactions, "down");
+    setOutcome(sumOutcome);
+    const lastOutcome = lastDate(transactions, "down");
+    setOutcomeLastDate(lastOutcome);
+
+    setTotal(sumIncome - sumOutcome);
+    const firstTotal = firstDate(transactions);
+    setTotalFirstDate(firstTotal);
+
+    setData(transactions.sort((a, b) => b.date.localeCompare(a.date)));
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+    }, [])
+  );
 
   return (
     <Column flex={1} backgroundColor={colors.white.background}>
@@ -108,16 +143,18 @@ export function Dashboard() {
             </Column>
           </Row>
 
-          <IconButton
-            p={0}
-            icon={
-              <Feather
-                name="power"
-                size={24}
-                color={colors.secondary.default}
-              />
-            }
-          />
+          <BorderlessButton onPress={() => {}}>
+            <IconButton
+              p={0}
+              icon={
+                <Feather
+                  name="power"
+                  size={24}
+                  color={colors.secondary.default}
+                />
+              }
+            />
+          </BorderlessButton>
         </Row>
       </Row>
 
@@ -131,32 +168,39 @@ export function Dashboard() {
         <HighlightCard
           type="income"
           title="Entradas"
-          amount={17400}
-          lastTransaction="Última entrada dia 01 de agosto"
+          amount={income}
+          lastTransaction={`${
+            incomeLastDate ? `Última entrada dia ${incomeLastDate}` : ""
+          }`}
         />
         <HighlightCard
           type="outcome"
           title="Saídas"
-          amount={1259}
-          lastTransaction="Última saída dia 01 de agosto"
+          amount={outcome}
+          lastTransaction={`${
+            outcomeLastDate ? `Última saída dia ${outcomeLastDate}` : ""
+          }`}
         />
         <HighlightCard
           type="total"
           title="Total"
-          amount={16141}
-          lastTransaction="01 de agosto até hoje"
+          amount={total}
+          lastTransaction={`${
+            totalFirstDate ? `${totalFirstDate} até hoje` : ""
+          }`}
         />
       </ScrollView>
 
       <Column flex={1} px={6} mt={20}>
-        {transactions.length > 0 && (
+        {data.length > 0 && (
           <Text fontSize={18} mb={4}>
             Listagem
           </Text>
         )}
 
         <FlatList
-          data={transactions}
+          ref={flatListRef}
+          data={data}
           renderItem={({ item }) => <TransactionCard data={item} />}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
