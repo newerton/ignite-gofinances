@@ -1,7 +1,6 @@
-import { Column, Heading, Text, useTheme } from "native-base";
+import { Column, Text, useTheme } from "native-base";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { getStatusBarHeight } from "react-native-iphone-x-helper";
 import ControlledTextField from "../components/ControlledTextField";
 import { yupResolver } from "@hookform/resolvers/yup";
 import TransactionTypeButton from "../components/TransactionTypeButton";
@@ -15,6 +14,7 @@ import uuid from "react-native-uuid";
 import * as Yup from "yup";
 import { useNavigation } from "@react-navigation/native";
 import { Header } from "../components/Header";
+import { useAuth } from "../hooks/auth";
 
 const initialValues = {
   name: "",
@@ -46,6 +46,7 @@ export function Register() {
   const { colors } = useTheme();
   const priceRef = useRef(null);
   const navigation = useNavigation();
+  const { user } = useAuth();
 
   const [transactionType, setTransactionType] = useState<"up" | "down" | null>(
     null
@@ -53,7 +54,6 @@ export function Register() {
   const [category, setCategory] = useState("");
   const [categoryModalOpen, setCategorModalOpen] = useState<boolean>(false);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     control,
     formState: { errors },
@@ -78,10 +78,8 @@ export function Register() {
   }, [category]);
 
   const handleRegister = async (data: RegisterFormData) => {
-    setIsSubmitting(true);
-
-    try {
-      const dataKey = "@gofinance:transactions";
+      try {
+      const dataKey = `@gofinance:transactions:${user.id}`;
       const dataStorage = await AsyncStorage.getItem(dataKey);
       const currentData = dataStorage ? JSON.parse(dataStorage) : [];
       const newTransaction = {
@@ -94,7 +92,6 @@ export function Register() {
         dataKey,
         JSON.stringify([...currentData, newTransaction])
       );
-      setIsSubmitting(false);
       reset();
       setTransactionType(null);
       setCategory("");
@@ -105,7 +102,6 @@ export function Register() {
       console.log(error);
       Alert.alert("Não foi possível salvar");
     }
-    setIsSubmitting(false);
   };
 
   const handleCloseSelectCategoryModal = () => {
@@ -177,7 +173,7 @@ export function Register() {
                   justifyContent: "center",
                 }}
               >
-                <Text color={colors.white.default}>Enviar</Text>
+                <Text color={colors.white.default}>Cadastrar</Text>
               </RectButton>
             </Column>
           </Column>

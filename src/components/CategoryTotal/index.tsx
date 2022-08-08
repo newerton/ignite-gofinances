@@ -1,8 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Box, Column, IIconProps, Row, Text, useTheme } from "native-base";
-import { useRef, useState } from "react";
+import { Box, Row, Text, useTheme } from "native-base";
 import { BRL } from "../../utils/currency";
-import { TransactionCardProps } from "../TransactionCard";
 import { Feather } from "@expo/vector-icons";
 
 type CategoryTotal = {
@@ -18,10 +15,9 @@ type CategoryTotalProps = {
 };
 
 export function CategoryTotal({
-  data: { key, name, color, icon, total },
+  data: { name, color, icon, total },
 }: CategoryTotalProps) {
   const { colors } = useTheme();
-
   return (
     <Row
       h={12}

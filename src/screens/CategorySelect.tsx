@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   Column,
   FlatList,
   Heading,

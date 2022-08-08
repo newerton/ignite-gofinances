@@ -25,10 +25,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import dayjs from "dayjs";
 import "dayjs/locale/pt-br";
+import { useAuth } from "../hooks/auth";
 
 dayjs.locale("pt-br");
 
-const sum = (data, type) => {
+const sum = (data: TransactionCardProps[], type: "up" | "down") => {
   return data.reduce((total, transaction) => {
     if (transaction.transaction_type === type) {
       return total + transaction.price;
@@ -37,10 +38,10 @@ const sum = (data, type) => {
   }, 0);
 };
 
-const lastDate = (data, type) => {
+const lastDate = (data: TransactionCardProps[], type: "up" | "down") => {
   const date = data.reduce((last, transaction) => {
     if (transaction.transaction_type === type) {
-      return last > transaction.date ? last : transaction.date;
+      return last.toString() > transaction.date ? last : transaction.date;
     }
     return last;
   }, 0);
@@ -51,9 +52,9 @@ const lastDate = (data, type) => {
   return null;
 };
 
-const firstDate = (data) => {
+const firstDate = (data: TransactionCardProps[]) => {
   const date = data.reduce((last, transaction) => {
-    return last < transaction.date ? last : transaction.date;
+    return last.toString() < transaction.date ? last : transaction.date;
   }, 0);
 
   if (date) {
@@ -63,42 +64,59 @@ const firstDate = (data) => {
 };
 
 export function Dashboard() {
+  const { user, signOut } = useAuth();
   const [data, setData] = useState<TransactionCardProps[]>([]);
 
   const [income, setIncome] = useState<number | null>(null);
-  const [incomeLastDate, setIncomeLastDate] = useState<string>(null);
+  const [incomeLastDate, setIncomeLastDate] = useState<string | null>(null);
 
-  const [outcome, setOutcome] = useState<number| null>(null);
-  const [outcomeLastDate, setOutcomeLastDate] = useState<string>(null);
+  const [outcome, setOutcome] = useState<number | null>(null);
+  const [outcomeLastDate, setOutcomeLastDate] = useState<string | null>(null);
 
-  const [total, setTotal] = useState<number| null>(null);
-  const [totalFirstDate, setTotalFirstDate] = useState<string>(null);
+  const [total, setTotal] = useState<number | null>(null);
+  const [totalFirstDate, setTotalFirstDate] = useState<string | null>(null);
 
   const { colors } = useTheme();
   const statusBarHeight = getStatusBarHeight();
   const flatListRef = useRef(null);
 
   const loadData = async () => {
-    const dataKey = "@gofinance:transactions";
+    const dataKey = `@gofinance:transactions:${user.id}`;
     const dataStorage = await AsyncStorage.getItem(dataKey);
     const transactions = dataStorage ? JSON.parse(dataStorage) : [];
 
-    const sumIncome = sum(transactions, "up");
-    setIncome(sumIncome);
-    const lastIncome = lastDate(transactions, "up");
-    setIncomeLastDate(lastIncome);
+    if (transactions.length > 0) {
+      const sumIncome = sum(transactions, "up");
+      const lastIncome = lastDate(transactions, "up");
+      const sumOutcome = sum(transactions, "down");
+      const lastOutcome = lastDate(transactions, "down");
+      const firstTotal = firstDate(transactions);
 
-    const sumOutcome = sum(transactions, "down");
-    setOutcome(sumOutcome);
-    const lastOutcome = lastDate(transactions, "down");
-    setOutcomeLastDate(lastOutcome);
+      setIncome(sumIncome);
+      setIncomeLastDate(lastIncome);
+      setOutcome(sumOutcome);
+      setOutcomeLastDate(lastOutcome);
+      setTotal(sumIncome - sumOutcome);
+      setTotalFirstDate(firstTotal);
+    } else {
+      setIncome(0);
+      setIncomeLastDate(null);
+      setOutcome(0);
+      setOutcomeLastDate(null);
+      setTotal(0);
+      setTotalFirstDate(null);
+    }
 
-    setTotal(sumIncome - sumOutcome);
-    const firstTotal = firstDate(transactions);
-    setTotalFirstDate(firstTotal);
-
-    setData(transactions.sort((a, b) => b.date.localeCompare(a.date)));
+    setData(
+      transactions.sort((a: TransactionCardProps, b: TransactionCardProps) =>
+        b.date.localeCompare(a.date)
+      )
+    );
   };
+
+  const handleLogout = useCallback(async () => {
+    return signOut();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {
@@ -121,7 +139,7 @@ export function Dashboard() {
           <Row alignItems="center">
             <Avatar
               source={{
-                uri: "https://avatars.githubusercontent.com/u/4175945?v=4",
+                uri: user.photo,
               }}
               mr={4}
               w={12}
@@ -138,12 +156,12 @@ export function Dashboard() {
                 fontSize={18}
                 fontWeight="bold"
               >
-                Newerton
+                {user.name}
               </Text>
             </Column>
           </Row>
 
-          <BorderlessButton onPress={() => {}}>
+          <BorderlessButton onPress={handleLogout}>
             <IconButton
               p={0}
               icon={

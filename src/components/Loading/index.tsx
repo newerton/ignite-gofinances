@@ -1,4 +1,4 @@
-import { Column, Row, useTheme, View } from "native-base";
+import { Column, useTheme } from "native-base";
 import { ActivityIndicator } from "react-native";
 
 export function Loading() {

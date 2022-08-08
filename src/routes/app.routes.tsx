@@ -14,7 +14,7 @@ export function AppRoutes() {
 
   return (
     <Navigator
-      initialRouteName="Resumo"
+      initialRouteName="Listagem"
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.secondary.default,

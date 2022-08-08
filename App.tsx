@@ -11,30 +11,57 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 
-import { Animated, StyleSheet } from "react-native";
+import { Animated, Image, StyleSheet } from "react-native";
 import { Asset } from "expo-asset";
 import Constants from "expo-constants";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+import splashImage from "./src/assets/images/splash.png";
+import { SignIn } from "./src/screens/SignIn";
+import AppProvider from "./src/hooks";
+
+import { LogBox } from "react-native";
+import { useAuth } from "./src/hooks/auth";
+
+LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHideAsync().catch(() => {
   /* reloading the app might trigger some race conditions, ignore them */
 });
 
+const cacheImages = async (images) => {
+  return images.map((image) => {
+    if (typeof image === "string") {
+      return Image.prefetch(image);
+    } else {
+      return Asset.fromModule(image).downloadAsync();
+    }
+  });
+};
+
+const cacheFonts = async (fonts) => {
+  return Font.loadAsync(fonts);
+};
+
 export default function App() {
   return (
-    <NativeBaseProvider theme={THEME}>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <AnimatedAppLoader image={{ uri: Constants.manifest.splash.image }}>
-          <StatusBar
-            barStyle="light-content"
-            backgroundColor="transparent"
-            translucent
-          />
-          <Routes />
-        </AnimatedAppLoader>
-      </GestureHandlerRootView>
-    </NativeBaseProvider>
+    <>
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
+      <NativeBaseProvider theme={THEME}>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <AppProvider>
+            <AnimatedAppLoader image={{ uri: Constants.manifest.splash.image }}>
+              <Routes />
+            </AnimatedAppLoader>
+          </AppProvider>
+        </GestureHandlerRootView>
+      </NativeBaseProvider>
+    </>
   );
 }
 
@@ -59,6 +86,7 @@ function AnimatedSplashScreen({ children, image }) {
       // Load stuff
       await Promise.all([]);
     } catch (e) {
+      console.log(e);
       // handle errors
     } finally {
       setAppReady(true);
@@ -90,7 +118,7 @@ function AnimatedSplashScreen({ children, image }) {
                 },
               ],
             }}
-            source={image}
+            source={splashImage}
             onLoadEnd={onImageLoaded}
             fadeDuration={0}
           />
@@ -102,26 +130,28 @@ function AnimatedSplashScreen({ children, image }) {
 
 function AnimatedAppLoader({ children, image }) {
   const [isSplashReady, setSplashReady] = useState(false);
+  const { loading } = useAuth();
 
   useEffect(() => {
     async function prepare() {
-      await Asset.fromURI(image.uri).downloadAsync();
-      
-      await Font.loadAsync({
+      await cacheImages([splashImage]);
+
+      await cacheFonts({
         Roboto_400Regular,
         Roboto_500Medium,
         Roboto_700Bold,
-      });
-
-      await Font.loadAsync({
         Feather: require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf"),
       });
 
-      setSplashReady(true);
+      const isValid = !loading;
+
+      if (isValid) {
+        setSplashReady(true);
+      }
     }
 
     prepare();
-  }, [image]);
+  }, [image, loading]);
 
   if (!isSplashReady) {
     return null;

@@ -1,24 +1,27 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
 import dayjs from "dayjs";
-import { Box, Column, Heading, ScrollView, Text, useTheme } from "native-base";
-import { useCallback, useEffect, useState } from "react";
+import { Box, Column, Heading, ScrollView, useTheme } from "native-base";
+import { useCallback, useState } from "react";
 import { VictoryPie } from "victory-native";
 import { CategoryTotal } from "../components/CategoryTotal";
 import { Header } from "../components/Header";
 import { Loading } from "../components/Loading";
 import { MonthSelect } from "../components/MonthSelect";
 import { TransactionCardProps } from "../components/TransactionCard";
+import { useAuth } from "../hooks/auth";
 import { categories } from "../utils/categories";
 
 export function Resume() {
   const { colors } = useTheme();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [categoriesList, setCategoriesList] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const loadData = async () => {
-    const dataKey = "@gofinance:transactions";
+    const dataKey = `@gofinance:transactions:${user.id}`;
     const dataStorage = await AsyncStorage.getItem(dataKey);
     const transactions = dataStorage ? JSON.parse(dataStorage) : [];
 
@@ -60,7 +63,7 @@ export function Resume() {
   };
 
   const handleChangeDate = (action: "next" | "prev") => {
-    setIsLoading(true)
+    setIsLoading(true);
     if (action === "next") {
       setSelectedDate(dayjs(selectedDate).add(1, "month").toDate());
     } else {
@@ -84,47 +87,49 @@ export function Resume() {
         px={6}
         mt={4}
       />
-      {isLoading ? (
-        <Loading />
-      ) : categoriesList.length > 0 ? (
-        <ScrollView
-          flex={1}
-          pt={2}
-          px={6}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            paddingBottom: 56,
-          }}
-        >
-          <Box alignItems="center" mt={-5}>
-            <VictoryPie
-              height={350}
-              colorScale={categoriesList.map((category) => category.color)}
-              data={categoriesList}
-              x="percentage"
-              y="total"
-              style={{
-                labels: {
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  fill: colors.white.default,
-                },
-              }}
-              labelRadius={50}
-            />
-          </Box>
+      <ScrollView
+        flex={1}
+        pt={2}
+        px={6}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: useBottomTabBarHeight(),
+          justifyContent: "center",
+          height: isLoading || categoriesList.length === 0 ? "100%" : "auto",
+        }}
+      >
+        {isLoading ? (
+          <Loading />
+        ) : categoriesList.length > 0 ? (
+          <>
+            <Box alignItems="center" mt={-5}>
+              <VictoryPie
+                height={350}
+                colorScale={categoriesList.map((category) => category.color)}
+                data={categoriesList}
+                x="percentage"
+                y="total"
+                style={{
+                  labels: {
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    fill: colors.white.default,
+                  },
+                }}
+                labelRadius={50}
+              />
+            </Box>
 
-          {categoriesList.map((category) => (
-            <CategoryTotal key={category.key} data={category} />
-          ))}
-        </ScrollView>
-      ) : (
-        <Column flex={1} justifyContent="center" alignItems="center" p={8}>
-          <Heading textAlign="center">
+            {categoriesList.map((category) => (
+              <CategoryTotal key={category.key} data={category} />
+            ))}
+          </>
+        ) : (
+          <Heading textAlign="center" size="md">
             Nenhum resultado encontrado para esse mês.
           </Heading>
-        </Column>
-      )}
+        )}
+      </ScrollView>
     </Column>
   );
 }

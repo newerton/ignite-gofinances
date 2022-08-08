@@ -1,4 +1,4 @@
-import { Column, Heading, useTheme, VStack } from "native-base";
+import { Column, Heading, useTheme } from "native-base";
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
 
 type HeaderProps = {

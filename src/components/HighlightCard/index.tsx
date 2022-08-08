@@ -1,7 +1,7 @@
 import { Column, Row, Text, useTheme } from "native-base";
 import { Feather } from "@expo/vector-icons";
 import { BRL } from "../../utils/currency";
-import ContentLoader, { Circle, Rect } from "react-content-loader/native";
+import ContentLoader, { Rect } from "react-content-loader/native";
 import { memo } from "react";
 
 type HighlightCardProps = {
@@ -74,7 +74,7 @@ const HighlightCard = ({
 
       <Row>
         <Column>
-          {amount ? (
+          {typeof amount === "number" ? (
             <>
               <Text fontSize={32} fontWeight={500} color={currencyColor}>
                 {BRL(amount).format()}
