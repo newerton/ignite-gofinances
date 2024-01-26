@@ -19,7 +19,7 @@
     "babel-plugin-inline-dotenv": "^1.7.0",
     "currency.js": "^2.0.4",
     "dayjs": "^1.11.4",
-    "expo": "^44.0.6",
+    "expo": "^50.0.3",
     "expo-apple-authentication": "~6.1.0",
     "expo-asset": "~8.5.0",
     "expo-auth-session": "~5.0.2",
