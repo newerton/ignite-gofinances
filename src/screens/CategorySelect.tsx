@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import {
   Column,
   FlatList,
@@ -6,15 +7,14 @@ import {
   Spacer,
   Text,
   useTheme,
-} from "native-base";
-import { Feather } from "@expo/vector-icons";
-import { categories } from "../utils/categories";
-import { Dispatch, SetStateAction } from "react";
-import { TouchableOpacity } from "react-native";
+} from 'native-base';
+import type { Dispatch, SetStateAction } from 'react';
+import { TouchableOpacity } from 'react-native';
 import {
   GestureHandlerRootView,
   RectButton,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
+import { categories } from '../utils/categories';
 
 type CategorySelectProps = {
   category: string;
@@ -43,7 +43,7 @@ export function CategorySelect({
         <Column
           w="full"
           alignItems="center"
-          justifyContent={"flex-end"}
+          justifyContent={'flex-end'}
           pb={19}
           h={113}
           bg={colors.primary.default}
@@ -86,8 +86,8 @@ export function CategorySelect({
                 backgroundColor: colors.secondary.default,
                 borderRadius: 5,
                 height: 56,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <Text color={colors.white.default}>Selecionar</Text>

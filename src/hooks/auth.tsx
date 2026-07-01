@@ -1,15 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as AppleAuthentication from 'expo-apple-authentication';
+
+import * as AuthSession from 'expo-auth-session';
 import {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
-} from "react";
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import * as AuthSession from "expo-auth-session";
-import * as AppleAuthentication from "expo-apple-authentication";
+} from 'react';
 
 const { CLIENT_ID } = process.env;
 const { REDIRECT_URI } = process.env;
@@ -51,8 +50,8 @@ export const AuthProvider: React.FC = ({ children }) => {
   useEffect(() => {
     async function loadStorageData(): Promise<void> {
       const [user, access_token] = await AsyncStorage.multiGet([
-        "@gofinance:user",
-        "@gofinance:access_token",
+        '@gofinance:user',
+        '@gofinance:access_token',
       ]);
 
       if (user[1] && access_token[1]) {
@@ -76,9 +75,9 @@ export const AuthProvider: React.FC = ({ children }) => {
         authUrl,
       })) as AuthorizationResponse;
 
-      if (type === "success") {
+      if (type === 'success') {
         const response = await fetch(
-          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`
+          `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`,
         ).then((res) => res.json());
 
         const userLogged = {
@@ -89,8 +88,8 @@ export const AuthProvider: React.FC = ({ children }) => {
         };
 
         await AsyncStorage.multiSet([
-          ["@gofinance:user", JSON.stringify(userLogged)],
-          ["@gofinance:access_token", params.access_token],
+          ['@gofinance:user', JSON.stringify(userLogged)],
+          ['@gofinance:access_token', params.access_token],
         ]);
 
         setData({ user: userLogged, access_token: params.access_token });
@@ -101,7 +100,6 @@ export const AuthProvider: React.FC = ({ children }) => {
       setLoading(false);
       throw new Error(err);
     }
-    
   }, []);
 
   const signInApple = useCallback(async () => {
@@ -114,7 +112,7 @@ export const AuthProvider: React.FC = ({ children }) => {
       });
 
       if (credential) {
-        const name = credential.fullName!.givenName!;
+        const name = credential.fullName?.givenName!;
         const photo = `https://ui-avatars.com/api/?name=${name}&length=1`;
 
         const userLogged = {
@@ -125,8 +123,8 @@ export const AuthProvider: React.FC = ({ children }) => {
         };
 
         await AsyncStorage.multiSet([
-          ["@gofinance:user", JSON.stringify(userLogged)],
-          ["@gofinance:access_token", credential.identityToken],
+          ['@gofinance:user', JSON.stringify(userLogged)],
+          ['@gofinance:access_token', credential.identityToken],
         ]);
 
         setData({ user: userLogged, access_token: credential.identityToken });
@@ -138,7 +136,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   const signOut = useCallback(async () => {
-    await AsyncStorage.multiRemove(["@gofinance:user", "@gofinance:token"]);
+    await AsyncStorage.multiRemove(['@gofinance:user', '@gofinance:token']);
 
     setData({} as AuthState);
   }, []);
@@ -156,7 +154,7 @@ export const useAuth = (): AuthContextProps => {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error("useAuth must be used within a AuthProvider");
+    throw new Error('useAuth must be used within a AuthProvider');
   }
 
   return context;

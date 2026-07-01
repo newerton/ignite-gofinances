@@ -1,29 +1,23 @@
-import { NativeBaseProvider, StatusBar, View } from "native-base";
-import { THEME } from "./src/styles/theme";
 import {
   Roboto_400Regular,
   Roboto_500Medium,
   Roboto_700Bold,
-} from "@expo-google-fonts/roboto";
+} from '@expo-google-fonts/roboto';
+import { Asset } from 'expo-asset';
+import Constants from 'expo-constants';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+import { NativeBaseProvider, StatusBar, View } from 'native-base';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, Image, LogBox, StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import splashImage from './src/assets/images/splash.png';
+import AppProvider from './src/hooks';
+import { useAuth } from './src/hooks/auth';
+import { Routes } from './src/routes';
+import { THEME } from './src/styles/theme';
 
-import { Routes } from "./src/routes";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import * as SplashScreen from "expo-splash-screen";
-import * as Font from "expo-font";
-
-import { Animated, Image, StyleSheet } from "react-native";
-import { Asset } from "expo-asset";
-import Constants from "expo-constants";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import splashImage from "./src/assets/images/splash.png";
-import { SignIn } from "./src/screens/SignIn";
-import AppProvider from "./src/hooks";
-
-import { LogBox } from "react-native";
-import { useAuth } from "./src/hooks/auth";
-
-LogBox.ignoreLogs(["EventEmitter.removeListener"]);
+LogBox.ignoreLogs(['EventEmitter.removeListener']);
 
 // Instruct SplashScreen not to hide yet, we want to do this manually
 SplashScreen.preventAutoHideAsync().catch(() => {
@@ -32,7 +26,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 const cacheImages = async (images) => {
   return images.map((image) => {
-    if (typeof image === "string") {
+    if (typeof image === 'string') {
       return Image.prefetch(image);
     } else {
       return Asset.fromModule(image).downloadAsync();
@@ -78,7 +72,7 @@ function AnimatedSplashScreen({ children, image }) {
         useNativeDriver: true,
       }).start(() => setAnimationComplete(true));
     }
-  }, [isAppReady]);
+  }, [isAppReady, animation]);
 
   const onImageLoaded = useCallback(async () => {
     try {
@@ -109,9 +103,9 @@ function AnimatedSplashScreen({ children, image }) {
         >
           <Animated.Image
             style={{
-              width: "100%",
-              height: "100%",
-              resizeMode: Constants.manifest.splash.resizeMode || "contain",
+              width: '100%',
+              height: '100%',
+              resizeMode: Constants.manifest.splash.resizeMode || 'contain',
               transform: [
                 {
                   scale: animation,
@@ -140,7 +134,7 @@ function AnimatedAppLoader({ children, image }) {
         Roboto_400Regular,
         Roboto_500Medium,
         Roboto_700Bold,
-        Feather: require("@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf"),
+        Feather: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/Feather.ttf'),
       });
 
       const isValid = !loading;
@@ -151,7 +145,7 @@ function AnimatedAppLoader({ children, image }) {
     }
 
     prepare();
-  }, [image, loading]);
+  }, [loading]);
 
   if (!isSplashReady) {
     return null;

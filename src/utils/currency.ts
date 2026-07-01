@@ -8,7 +8,7 @@ export const stringToFloat = (value: string): string | null => {
     fromCents: true,
     precision: 2,
   });
-  if (!isNaN(number.value)) {
+  if (!Number.isNaN(number.value)) {
     return number.value.toString();
   }
 

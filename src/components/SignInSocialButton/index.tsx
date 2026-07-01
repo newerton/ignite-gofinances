@@ -1,6 +1,6 @@
-import { Box, Text, useTheme } from "native-base";
-import { RectButton, RectButtonProps } from "react-native-gesture-handler";
-import { SvgProps } from "react-native-svg";
+import { Box, Text, useTheme } from 'native-base';
+import { RectButton, type RectButtonProps } from 'react-native-gesture-handler';
+import type { SvgProps } from 'react-native-svg';
 
 type SignInSocialButtonProps = RectButtonProps & {
   title: string;
@@ -16,7 +16,7 @@ export function SignInSocialButton({
   return (
     <RectButton
       style={{
-        flexDirection: "row",
+        flexDirection: 'row',
         backgroundColor: colors.white.default,
         borderRadius: 5,
         marginBottom: 16,

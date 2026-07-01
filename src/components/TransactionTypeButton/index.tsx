@@ -1,20 +1,20 @@
+import { Feather } from '@expo/vector-icons';
 import {
   Box,
   Column,
   FormControl,
   Row,
   Text,
-  useTheme,
   WarningOutlineIcon,
-} from "native-base";
-import { Feather } from "@expo/vector-icons";
-import { Dispatch, SetStateAction } from "react";
-import { FieldError } from "react-hook-form";
-import { RectButton } from "react-native-gesture-handler";
+  useTheme,
+} from 'native-base';
+import type { Dispatch, SetStateAction } from 'react';
+import type { FieldError } from 'react-hook-form';
+import { RectButton } from 'react-native-gesture-handler';
 
 type TransactionTypeButtonProps = {
-  transactionType: "up" | "down";
-  setTransactionType: Dispatch<SetStateAction<"up" | "down" | null>>;
+  transactionType: 'up' | 'down';
+  setTransactionType: Dispatch<SetStateAction<'up' | 'down' | null>>;
   error: FieldError;
 };
 
@@ -26,19 +26,19 @@ const TransactionTypeButton = ({
   const { colors } = useTheme();
 
   return (
-    <FormControl isInvalid={Boolean(error && error.message)} mb={4}>
-      <Row w="full" alignItems={"center"} justifyContent="center" space={2}>
+    <FormControl isInvalid={Boolean(error?.message)} mb={4}>
+      <Row w="full" alignItems={'center'} justifyContent="center" space={2}>
         <Column w="49%">
-          <RectButton onPress={() => setTransactionType("up")}>
+          <RectButton onPress={() => setTransactionType('up')}>
             <Box
               bg={
-                transactionType === "up"
+                transactionType === 'up'
                   ? colors.success.light
                   : colors.white.background
               }
               borderWidth={1}
               borderColor={
-                transactionType === "up"
+                transactionType === 'up'
                   ? colors.success.light
                   : colors.gray.text
               }
@@ -60,16 +60,16 @@ const TransactionTypeButton = ({
           </RectButton>
         </Column>
         <Column w="49%">
-          <RectButton onPress={() => setTransactionType("down")}>
+          <RectButton onPress={() => setTransactionType('down')}>
             <Box
               bg={
-                transactionType === "down"
+                transactionType === 'down'
                   ? colors.error.light
                   : colors.white.background
               }
               borderWidth={1}
               borderColor={
-                transactionType === "down"
+                transactionType === 'down'
                   ? colors.error.light
                   : colors.gray.text
               }
@@ -95,7 +95,7 @@ const TransactionTypeButton = ({
         <FormControl.ErrorMessage
           px={2}
           leftIcon={<WarningOutlineIcon size="xs" />}
-          _text={{ color: "red.400" }}
+          _text={{ color: 'red.400' }}
         >
           {error.message}
         </FormControl.ErrorMessage>

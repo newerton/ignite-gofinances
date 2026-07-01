@@ -1,6 +1,6 @@
-import { Box, Row, Text, useTheme } from "native-base";
-import { BRL } from "../../utils/currency";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from '@expo/vector-icons';
+import { Box, Row, Text, useTheme } from 'native-base';
+import { BRL } from '../../utils/currency';
 
 type CategoryTotal = {
   key: string;

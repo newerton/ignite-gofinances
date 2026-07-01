@@ -1,45 +1,44 @@
-import { Column, Text, useTheme } from "native-base";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import ControlledTextField from "../components/ControlledTextField";
-import { yupResolver } from "@hookform/resolvers/yup";
-import TransactionTypeButton from "../components/TransactionTypeButton";
-import { SelectField } from "../components/SelectField";
-import { CategorySelect } from "./CategorySelect";
-import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from "react-native";
-import { RectButton } from "react-native-gesture-handler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import uuid from "react-native-uuid";
-import * as Yup from "yup";
-import { useNavigation } from "@react-navigation/native";
-import { Header } from "../components/Header";
-import { useAuth } from "../hooks/auth";
+import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { Column, Text, useTheme } from 'native-base';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from 'react-native';
+import { RectButton } from 'react-native-gesture-handler';
+import uuid from 'react-native-uuid';
+import * as Yup from 'yup';
+import ControlledTextField from '../components/ControlledTextField';
+import { Header } from '../components/Header';
+import { SelectField } from '../components/SelectField';
+import TransactionTypeButton from '../components/TransactionTypeButton';
+import { useAuth } from '../hooks/auth';
+import { CategorySelect } from './CategorySelect';
 
 const initialValues = {
-  name: "",
-  price: "",
+  name: '',
+  price: '',
   transaction_type: null,
-  category: "",
+  category: '',
 };
 
 type RegisterFormData = {
   name: string;
   price: string;
-  transaction_type: "up" | "down";
+  transaction_type: 'up' | 'down';
   category: string;
 };
 
 const OrderRegisterSchema = Yup.object({
-  name: Yup.string().required("Nome é obrigatório").label("Nome"),
+  name: Yup.string().required('Nome é obrigatório').label('Nome'),
   price: Yup.number()
-    .typeError("Preço é obrrigatório")
-    .positive("O preço não pode ser negativo")
-    .label("Preço"),
+    .typeError('Preço é obrrigatório')
+    .positive('O preço não pode ser negativo')
+    .label('Preço'),
   transaction_type: Yup.mixed()
-    .oneOf(["up", "down"], "Tipo de transação é obrigatório")
-    .label("Tipo de transação"),
-  category: Yup.string().required("Categoria é obrigatória").label("Categoria"),
+    .oneOf(['up', 'down'], 'Tipo de transação é obrigatório')
+    .label('Tipo de transação'),
+  category: Yup.string().required('Categoria é obrigatória').label('Categoria'),
 });
 
 export function Register() {
@@ -48,10 +47,10 @@ export function Register() {
   const navigation = useNavigation();
   const { user } = useAuth();
 
-  const [transactionType, setTransactionType] = useState<"up" | "down" | null>(
-    null
+  const [transactionType, setTransactionType] = useState<'up' | 'down' | null>(
+    null,
   );
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState('');
   const [categoryModalOpen, setCategorModalOpen] = useState<boolean>(false);
 
   const {
@@ -67,18 +66,18 @@ export function Register() {
 
   useEffect(() => {
     if (transactionType) {
-      setValue("transaction_type", transactionType);
+      setValue('transaction_type', transactionType);
     }
-  }, [transactionType]);
+  }, [transactionType, setValue]);
 
   useEffect(() => {
     if (category) {
-      setValue("category", category);
+      setValue('category', category);
     }
-  }, [category]);
+  }, [category, setValue]);
 
   const handleRegister = async (data: RegisterFormData) => {
-      try {
+    try {
       const dataKey = `@gofinance:transactions:${user.id}`;
       const dataStorage = await AsyncStorage.getItem(dataKey);
       const currentData = dataStorage ? JSON.parse(dataStorage) : [];
@@ -90,17 +89,17 @@ export function Register() {
 
       await AsyncStorage.setItem(
         dataKey,
-        JSON.stringify([...currentData, newTransaction])
+        JSON.stringify([...currentData, newTransaction]),
       );
       reset();
       setTransactionType(null);
-      setCategory("");
+      setCategory('');
 
-      Alert.alert("Transação salva com sucesso");
-      navigation.navigate("Listagem");
+      Alert.alert('Transação salva com sucesso');
+      navigation.navigate('Listagem');
     } catch (error) {
       console.log(error);
-      Alert.alert("Não foi possível salvar");
+      Alert.alert('Não foi possível salvar');
     }
   };
 
@@ -169,8 +168,8 @@ export function Register() {
                   backgroundColor: colors.secondary.default,
                   borderRadius: 5,
                   height: 56,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 <Text color={colors.white.default}>Cadastrar</Text>

@@ -1,11 +1,11 @@
-import { Box, Column, Text, useTheme } from "native-base";
-import { SignInSocialButton } from "../components/SignInSocialButton";
-import { useAuth } from "../hooks/auth";
-import { Alert, Platform } from "react-native";
+import { Box, Column, Text, useTheme } from 'native-base';
+import { Alert, Platform } from 'react-native';
+import AppleIcon from '../assets/images/apple.svg';
+import GoogleIcon from '../assets/images/google.svg';
 
-import Logo from "../assets/images/logo.svg";
-import GoogleIcon from "../assets/images/google.svg";
-import AppleIcon from "../assets/images/apple.svg";
+import Logo from '../assets/images/logo.svg';
+import { SignInSocialButton } from '../components/SignInSocialButton';
+import { useAuth } from '../hooks/auth';
 
 export function SignIn() {
   const { colors } = useTheme();
@@ -14,16 +14,16 @@ export function SignIn() {
   const handleSignInWithGoogle = async () => {
     try {
       return signInGoogle();
-    } catch (error) {
-      Alert.alert("Não foi possível conectar com a conta Google");
+    } catch (_error) {
+      Alert.alert('Não foi possível conectar com a conta Google');
     }
   };
 
   const handleSignInWithApple = async () => {
     try {
       return signInApple();
-    } catch (error) {
-      Alert.alert("Não foi possível conectar com a conta Apple");
+    } catch (_error) {
+      Alert.alert('Não foi possível conectar com a conta Apple');
     }
   };
 
@@ -67,7 +67,7 @@ export function SignIn() {
             svg={GoogleIcon}
             onPress={handleSignInWithGoogle}
           />
-          {Platform.OS === "ios" && (
+          {Platform.OS === 'ios' && (
             <SignInSocialButton
               title="Entrar com Apple"
               svg={AppleIcon}

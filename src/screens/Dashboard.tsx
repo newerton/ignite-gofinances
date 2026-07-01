@@ -1,35 +1,35 @@
+import { Feather } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
+import dayjs from 'dayjs';
 import {
   Avatar,
-  Row,
+  Center,
+  Column,
+  FlatList,
   IconButton,
+  Row,
+  ScrollView,
   Text,
   useTheme,
-  Column,
-  ScrollView,
-  FlatList,
-  Center,
-} from "native-base";
-import { useCallback, useRef, useState } from "react";
+} from 'native-base';
+import { useCallback, useRef, useState } from 'react';
+import { BorderlessButton } from 'react-native-gesture-handler';
 import {
   getBottomSpace,
   getStatusBarHeight,
-} from "react-native-iphone-x-helper";
-import HighlightCard from "../components/HighlightCard";
-import { Feather } from "@expo/vector-icons";
+} from 'react-native-iphone-x-helper';
+import HighlightCard from '../components/HighlightCard';
 import {
   TransactionCard,
-  TransactionCardProps,
-} from "../components/TransactionCard";
-import { BorderlessButton } from "react-native-gesture-handler";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import dayjs from "dayjs";
-import "dayjs/locale/pt-br";
-import { useAuth } from "../hooks/auth";
+  type TransactionCardProps,
+} from '../components/TransactionCard';
+import 'dayjs/locale/pt-br';
+import { useAuth } from '../hooks/auth';
 
-dayjs.locale("pt-br");
+dayjs.locale('pt-br');
 
-const sum = (data: TransactionCardProps[], type: "up" | "down") => {
+const sum = (data: TransactionCardProps[], type: 'up' | 'down') => {
   return data.reduce((total, transaction) => {
     if (transaction.transaction_type === type) {
       return total + transaction.price;
@@ -38,7 +38,7 @@ const sum = (data: TransactionCardProps[], type: "up" | "down") => {
   }, 0);
 };
 
-const lastDate = (data: TransactionCardProps[], type: "up" | "down") => {
+const lastDate = (data: TransactionCardProps[], type: 'up' | 'down') => {
   const date = data.reduce((last, transaction) => {
     if (transaction.transaction_type === type) {
       return last.toString() > transaction.date ? last : transaction.date;
@@ -47,7 +47,7 @@ const lastDate = (data: TransactionCardProps[], type: "up" | "down") => {
   }, 0);
 
   if (date) {
-    return dayjs(date).format("DD [de] MMMM");
+    return dayjs(date).format('DD [de] MMMM');
   }
   return null;
 };
@@ -58,7 +58,7 @@ const firstDate = (data: TransactionCardProps[]) => {
   }, 0);
 
   if (date) {
-    return dayjs(date).format("DD [de] MMMM");
+    return dayjs(date).format('DD [de] MMMM');
   }
   return null;
 };
@@ -86,10 +86,10 @@ export function Dashboard() {
     const transactions = dataStorage ? JSON.parse(dataStorage) : [];
 
     if (transactions.length > 0) {
-      const sumIncome = sum(transactions, "up");
-      const lastIncome = lastDate(transactions, "up");
-      const sumOutcome = sum(transactions, "down");
-      const lastOutcome = lastDate(transactions, "down");
+      const sumIncome = sum(transactions, 'up');
+      const lastIncome = lastDate(transactions, 'up');
+      const sumOutcome = sum(transactions, 'down');
+      const lastOutcome = lastDate(transactions, 'down');
       const firstTotal = firstDate(transactions);
 
       setIncome(sumIncome);
@@ -109,20 +109,20 @@ export function Dashboard() {
 
     setData(
       transactions.sort((a: TransactionCardProps, b: TransactionCardProps) =>
-        b.date.localeCompare(a.date)
-      )
+        b.date.localeCompare(a.date),
+      ),
     );
   };
 
   const handleLogout = useCallback(async () => {
     return signOut();
-  }, []);
+  }, [signOut]);
 
   useFocusEffect(
     useCallback(() => {
       loadData();
       flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
-    }, [])
+    }, [loadData]),
   );
 
   return (
@@ -188,7 +188,7 @@ export function Dashboard() {
           title="Entradas"
           amount={income}
           lastTransaction={`${
-            incomeLastDate ? `Última entrada dia ${incomeLastDate}` : ""
+            incomeLastDate ? `Última entrada dia ${incomeLastDate}` : ''
           }`}
         />
         <HighlightCard
@@ -196,7 +196,7 @@ export function Dashboard() {
           title="Saídas"
           amount={outcome}
           lastTransaction={`${
-            outcomeLastDate ? `Última saída dia ${outcomeLastDate}` : ""
+            outcomeLastDate ? `Última saída dia ${outcomeLastDate}` : ''
           }`}
         />
         <HighlightCard
@@ -204,7 +204,7 @@ export function Dashboard() {
           title="Total"
           amount={total}
           lastTransaction={`${
-            totalFirstDate ? `${totalFirstDate} até hoje` : ""
+            totalFirstDate ? `${totalFirstDate} até hoje` : ''
           }`}
         />
       </ScrollView>

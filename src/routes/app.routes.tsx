@@ -1,11 +1,11 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useTheme } from "native-base";
-import { Platform } from "react-native";
-import { Dashboard } from "../screens/Dashboard";
-import { Register } from "../screens/Register";
-import { getBottomSpace } from "react-native-iphone-x-helper";
-import { Resume } from "../screens/Resume";
-import { Feather } from "@expo/vector-icons";
+import { Feather } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useTheme } from 'native-base';
+import { Platform } from 'react-native';
+import { getBottomSpace } from 'react-native-iphone-x-helper';
+import { Dashboard } from '../screens/Dashboard';
+import { Register } from '../screens/Register';
+import { Resume } from '../screens/Resume';
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
@@ -19,10 +19,10 @@ export function AppRoutes() {
         headerShown: false,
         tabBarActiveTintColor: colors.secondary.default,
         tabBarInactiveTintColor: colors.gray.text,
-        tabBarLabelPosition: "beside-icon",
+        tabBarLabelPosition: 'beside-icon',
         tabBarStyle: {
           height: getBottomSpace() + 50,
-          paddingVertical: Platform.OS === "ios" ? 20 : 0,
+          paddingVertical: Platform.OS === 'ios' ? 20 : 0,
         },
       }}
     >
@@ -31,11 +31,7 @@ export function AppRoutes() {
         component={Dashboard}
         options={{
           tabBarIcon: ({ size, color }) => (
-            <Feather
-              name="list"
-              size={size}
-              color={color}
-            />
+            <Feather name="list" size={size} color={color} />
           ),
         }}
       />
@@ -44,23 +40,19 @@ export function AppRoutes() {
         component={Register}
         options={{
           tabBarIcon: ({ size, color }) => (
-            <Feather
-              name="dollar-sign"
-              size={size}
-              color={color}
-            />
+            <Feather name="dollar-sign" size={size} color={color} />
           ),
         }}
       />
-      <Screen name="Resumo" component={Resume} options={{
+      <Screen
+        name="Resumo"
+        component={Resume}
+        options={{
           tabBarIcon: ({ size, color }) => (
-            <Feather
-              name="pie-chart"
-              size={size}
-              color={color}
-            />
+            <Feather name="pie-chart" size={size} color={color} />
           ),
-        }}/>
+        }}
+      />
     </Navigator>
   );
 }

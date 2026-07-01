@@ -1,17 +1,17 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { useFocusEffect } from "@react-navigation/native";
-import dayjs from "dayjs";
-import { Box, Column, Heading, ScrollView, useTheme } from "native-base";
-import { useCallback, useState } from "react";
-import { VictoryPie } from "victory-native";
-import { CategoryTotal } from "../components/CategoryTotal";
-import { Header } from "../components/Header";
-import { Loading } from "../components/Loading";
-import { MonthSelect } from "../components/MonthSelect";
-import { TransactionCardProps } from "../components/TransactionCard";
-import { useAuth } from "../hooks/auth";
-import { categories } from "../utils/categories";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useFocusEffect } from '@react-navigation/native';
+import dayjs from 'dayjs';
+import { Box, Column, Heading, ScrollView, useTheme } from 'native-base';
+import { useCallback, useState } from 'react';
+import { VictoryPie } from 'victory-native';
+import { CategoryTotal } from '../components/CategoryTotal';
+import { Header } from '../components/Header';
+import { Loading } from '../components/Loading';
+import { MonthSelect } from '../components/MonthSelect';
+import type { TransactionCardProps } from '../components/TransactionCard';
+import { useAuth } from '../hooks/auth';
+import { categories } from '../utils/categories';
 
 export function Resume() {
   const { colors } = useTheme();
@@ -30,13 +30,13 @@ export function Resume() {
         const transactionsByCategory = transactions.filter(
           (transaction: TransactionCardProps) =>
             transaction.category === category.key &&
-            dayjs(transaction.date).format("MM-YYYY") ===
-              dayjs(selectedDate).format("MM-YYYY")
+            dayjs(transaction.date).format('MM-YYYY') ===
+              dayjs(selectedDate).format('MM-YYYY'),
         );
 
         const total = transactionsByCategory.reduce(
           (total, transaction) => total + transaction.price,
-          0
+          0,
         );
 
         return {
@@ -55,26 +55,26 @@ export function Resume() {
       };
     });
     const onlyWithTotal = addPercentage.filter(
-      (category) => category.total > 0
+      (category) => category.total > 0,
     );
 
     setCategoriesList(onlyWithTotal);
     setIsLoading(false);
   };
 
-  const handleChangeDate = (action: "next" | "prev") => {
+  const handleChangeDate = (action: 'next' | 'prev') => {
     setIsLoading(true);
-    if (action === "next") {
-      setSelectedDate(dayjs(selectedDate).add(1, "month").toDate());
+    if (action === 'next') {
+      setSelectedDate(dayjs(selectedDate).add(1, 'month').toDate());
     } else {
-      setSelectedDate(dayjs(selectedDate).subtract(1, "month").toDate());
+      setSelectedDate(dayjs(selectedDate).subtract(1, 'month').toDate());
     }
   };
 
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [selectedDate])
+    }, [loadData]),
   );
 
   return (
@@ -94,8 +94,8 @@ export function Resume() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingBottom: useBottomTabBarHeight(),
-          justifyContent: "center",
-          height: isLoading || categoriesList.length === 0 ? "100%" : "auto",
+          justifyContent: 'center',
+          height: isLoading || categoriesList.length === 0 ? '100%' : 'auto',
         }}
       >
         {isLoading ? (
@@ -112,7 +112,7 @@ export function Resume() {
                 style={{
                   labels: {
                     fontSize: 18,
-                    fontWeight: "bold",
+                    fontWeight: 'bold',
                     fill: colors.white.default,
                   },
                 }}

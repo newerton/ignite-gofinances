@@ -1,15 +1,14 @@
-import dayjs from "dayjs";
-import { Column, Row, Text, useTheme, View } from "native-base";
-import { BRL } from "../../utils/currency";
-
-import { Feather } from "@expo/vector-icons";
-import { categories } from "../../utils/categories";
+import { Feather } from '@expo/vector-icons';
+import dayjs from 'dayjs';
+import { Column, Row, Text, View, useTheme } from 'native-base';
+import { categories } from '../../utils/categories';
+import { BRL } from '../../utils/currency';
 
 export type TransactionCardProps = {
   id: string;
   name: string;
   category: string;
-  transaction_type: "up" | "down";
+  transaction_type: 'up' | 'down';
   price: number;
   date: string;
 };
@@ -21,10 +20,10 @@ type Props = {
 export function TransactionCard({ data }: Props) {
   const { colors } = useTheme();
   const priceColor =
-    data.transaction_type === "up"
+    data.transaction_type === 'up'
       ? colors.success.default
       : colors.error.default;
-  const currency = data.transaction_type === "up" ? data.price : -data.price;
+  const currency = data.transaction_type === 'up' ? data.price : -data.price;
   const category = categories.find((item: any) => item.key === data.category);
 
   return (
@@ -36,12 +35,16 @@ export function TransactionCard({ data }: Props) {
       <Row justifyContent="space-between">
         <Row alignItems="center">
           <View mr={2}>
-            <Feather name={category.icon as any} size={20} color={colors.gray.text} />
+            <Feather
+              name={category.icon as any}
+              size={20}
+              color={colors.gray.text}
+            />
           </View>
           <Text color={colors.gray.text}>{category.name}</Text>
         </Row>
         <Text color={colors.gray.text}>
-          {dayjs(data.date).format("DD/MM/YYYY")}
+          {dayjs(data.date).format('DD/MM/YYYY')}
         </Text>
       </Row>
     </Column>

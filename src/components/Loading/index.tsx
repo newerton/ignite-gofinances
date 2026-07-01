@@ -1,5 +1,5 @@
-import { Column, useTheme } from "native-base";
-import { ActivityIndicator } from "react-native";
+import { Column, useTheme } from 'native-base';
+import { ActivityIndicator } from 'react-native';
 
 export function Loading() {
   const { colors } = useTheme();
